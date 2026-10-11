@@ -1,8 +1,4 @@
-"""
-Диалоговое окно входа пользователя (Авторизация).
-Фиксирует логин пользователя для формирования отчета о сессии.
-Запрещено использовать dict.
-"""
+"""Диалоговое окно входа пользователя."""
 
 from PyQt6.QtWidgets import (
     QVBoxLayout,
@@ -20,10 +16,10 @@ from custom_widgets import (
 
 
 class LoginDialog(CustomDialog):
-    """Окно ввода логина пользователя перед началом работы."""
+    """Окно авторизации пользователя."""
 
-    def __init__(self, default_login: str = "Student_MTI", parent=None):
-        super().__init__("Авторизация в системе", parent)
+    def __init__(self, default_login: str = "admin", parent=None):
+        super().__init__("Авторизация", parent)
         self.setFixedSize(360, 180)
         self._login_value = default_login
         self._init_ui(default_login)

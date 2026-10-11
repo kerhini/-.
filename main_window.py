@@ -1,10 +1,4 @@
-"""
-Главное окно приложения складского учёта.
-Требования ТЗ: классы, 10+ переопределённых компонентов, @staticmethod,
-абстрактный класс, спец. методы, сравнимые объекты, геттеры/сеттеры,
-кастомный Map, 5+ UI-компонентов, 10+ объектов в list/tuple/set, Layout-alignment,
-отчёт сессии при выходе.
-"""
+"""Главное окно приложения складского учёта."""
 
 from datetime import datetime
 
@@ -92,10 +86,7 @@ class _StatCard(QWidget):
 
 # ─── Главное окно ─────────────────────────────────────────────────────────────
 class InventoryAppWindow(CustomMainWindow):
-    """
-    Главное окно системы складского учёта.
-    Реализует все критерии экзаменационной работы МТИ.
-    """
+    """Главное окно системы складского учёта."""
 
     # Заголовки колонок таблицы
     _COL_HEADERS = ["ID", "Наименование", "Категория", "Цена", "Кол-во", "Штрихкод", "Рейтинг"]
@@ -108,7 +99,6 @@ class InventoryAppWindow(CustomMainWindow):
         self._time_in  = datetime.now()
         self._repository = ProductRepository()
 
-        # CustomMap вместо dict (требование ТЗ)
         self._column_mapping     = CustomMap()
         self._category_stats_map = CustomMap()
 

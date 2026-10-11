@@ -1,15 +1,8 @@
-"""
-Модуль пользовательской структуры данных для маппинга (CustomMap).
-В соответствии с требованиями ТЗ:
-- Запрещено использовать Map (dict). Для маппинга используется собственный кастомный класс.
-- Все сущности описаны через классы.
-- Вся функциональность реализована через методы класса или объекта.
-- Кастомный класс реализует специальные методы, гетеры/сеттеры и сравнение.
-"""
+"""Кастомная структура данных: маппинг ключ-значение без использования dict."""
 
 
 class MapEntry:
-    """Элемент пары 'ключ-значение' для пользовательской карты CustomMap."""
+    """Пара ключ-значение."""
 
     def __init__(self, key, value):
         self._key = key
@@ -17,24 +10,20 @@ class MapEntry:
 
     @property
     def key(self):
-        """Геттер ключа."""
         return self._key
 
     @key.setter
     def key(self, new_key):
-        """Сеттер ключа с валидацией."""
         if new_key is None:
             raise ValueError("Ключ не может быть None")
         self._key = new_key
 
     @property
     def value(self):
-        """Геттер значения."""
         return self._value
 
     @value.setter
     def value(self, new_value):
-        """Сеттер значения."""
         self._value = new_value
 
     def __repr__(self) -> str:
@@ -63,29 +52,23 @@ class MapEntry:
 
 
 class CustomMap:
-    """
-    Кастомная реализация структуры 'Ключ-Значение' без использования встроенного dict.
-    Внутри используется упорядоченный список объектов MapEntry.
-    """
+    """Ассоциативный контейнер на основе списка пар MapEntry."""
 
     def __init__(self):
-        # Хранилище записей на основе списка пользовательских объектов MapEntry
         self._entries = list()
 
     @property
     def entries(self) -> list:
-        """Геттер внутреннего списка записей."""
         return self._entries
 
     @entries.setter
     def entries(self, new_entries: list):
-        """Сеттер списка записей с валидацией."""
         if not isinstance(new_entries, list):
-            raise TypeError("Список записей должен быть экземпляром list")
+            raise TypeError("Ожидается list")
         self._entries = new_entries
 
     def put(self, key, value):
-        """Добавить или обновить пару ключ-значение."""
+        """Добавить или обновить запись."""
         for entry in self._entries:
             if entry.key == key:
                 entry.value = value
@@ -93,14 +76,14 @@ class CustomMap:
         self._entries.append(MapEntry(key, value))
 
     def get(self, key, default=None):
-        """Получить значение по ключу, либо default."""
+        """Получить значение по ключу."""
         for entry in self._entries:
             if entry.key == key:
                 return entry.value
         return default
 
     def remove(self, key) -> bool:
-        """Удалить запись по ключу. Возвращает True, если найдено и удалено."""
+        """Удалить запись по ключу."""
         for index in range(len(self._entries)):
             if self._entries[index].key == key:
                 self._entries.pop(index)
@@ -108,38 +91,22 @@ class CustomMap:
         return False
 
     def contains_key(self, key) -> bool:
-        """Проверка наличия ключа."""
         for entry in self._entries:
             if entry.key == key:
                 return True
         return False
 
     def keys(self) -> list:
-        """Получить список всех ключей."""
-        result = list()
-        for entry in self._entries:
-            result.append(entry.key)
-        return result
+        return [entry.key for entry in self._entries]
 
     def values(self) -> list:
-        """Получить список всех значений."""
-        result = list()
-        for entry in self._entries:
-            result.append(entry.value)
-        return result
+        return [entry.value for entry in self._entries]
 
     def items(self) -> list:
-        """Получить список пар (ключ, значение) в виде кортежей."""
-        result = list()
-        for entry in self._entries:
-            result.append((entry.key, entry.value))
-        return result
+        return [(entry.key, entry.value) for entry in self._entries]
 
     def clear(self):
-        """Очистить карту."""
         self._entries.clear()
-
-    # --- Специальные методы (dunder methods) ---
 
     def __len__(self) -> int:
         return len(self._entries)
@@ -148,14 +115,14 @@ class CustomMap:
         for entry in self._entries:
             if entry.key == key:
                 return entry.value
-        raise KeyError(f"Ключ {key!r} не найден в CustomMap")
+        raise KeyError(key)
 
     def __setitem__(self, key, value):
         self.put(key, value)
 
     def __delitem__(self, key):
         if not self.remove(key):
-            raise KeyError(f"Ключ {key!r} не найден для удаления в CustomMap")
+            raise KeyError(key)
 
     def __contains__(self, key) -> bool:
         return self.contains_key(key)
@@ -165,18 +132,12 @@ class CustomMap:
             yield entry.key
 
     def __repr__(self) -> str:
-        parts = list()
-        for entry in self._entries:
-            parts.append(f"{entry.key!r}: {entry.value!r}")
-        joined = ", ".join(parts)
-        return f"CustomMap([{joined}])"
+        parts = [f"{e.key!r}: {e.value!r}" for e in self._entries]
+        return f"CustomMap([{', '.join(parts)}])"
 
     def __str__(self) -> str:
-        parts = list()
-        for entry in self._entries:
-            parts.append(f"{entry.key}: {entry.value}")
-        joined = ", ".join(parts)
-        return f"CustomMap({joined})"
+        parts = [f"{e.key}: {e.value}" for e in self._entries]
+        return f"CustomMap({', '.join(parts)})"
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, CustomMap):
