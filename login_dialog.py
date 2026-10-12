@@ -13,38 +13,38 @@ from custom_widgets import (
 )
 
 
-# Окно авторизации пользователя перед началом работы
+# Окно авторизации перед запуском программы
 class LoginDialog(CustomDialog):
 
-    def __init__(self, default_login: str = "admin", parent=None):
-        super().__init__("Авторизация", parent)
-        self.setFixedSize(340, 170)
+    def __init__(self, default_login="admin", parent=None):
+        super().__init__("Вход в систему", parent)
+        self.setFixedSize(340, 160)
         self._login_value = default_login
         self._init_ui(default_login)
 
     @property
-    def login_value(self) -> str:
+    def login_value(self):
         return self._login_value
 
-    def _init_ui(self, default_login: str):
+    def _init_ui(self, default_login):
         layout = QVBoxLayout()
-        layout.setContentsMargins(18, 18, 18, 18)
+        layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(12)
 
-        # Заголовок
-        title_label = CustomLabel("Вход в систему", is_title=True)
+        # Заголовок окна
+        title_label = CustomLabel("Авторизация", is_title=True)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title_label)
 
-        # Форма ввода логина
+        # Поле для ввода логина
         form_layout = QFormLayout()
         form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.login_input = CustomLineEdit("Введите имя пользователя...")
+        self.login_input = CustomLineEdit("Введите ваш логин...")
         self.login_input.setText(default_login)
         form_layout.addRow(CustomLabel("Логин:"), self.login_input)
         layout.addLayout(form_layout)
 
-        # Кнопки
+        # Кнопки входа и отмены
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(8)
 
@@ -59,13 +59,13 @@ class LoginDialog(CustomDialog):
         layout.addLayout(btn_layout)
         self.setLayout(layout)
 
-        # Вход по нажатию Enter
+        # По нажатию Enter тоже логинимся
         self.login_input.enter_pressed_signal.connect(self._on_login)
 
     def _on_login(self):
         login = self.login_input.text().strip()
         if not login:
-            QMessageBox.warning(self, "Ошибка", "Введите логин!")
+            QMessageBox.warning(self, "Ошибка", "Логин не может быть пустым!")
             return
         self._login_value = login
         self.accept()

@@ -18,13 +18,16 @@ from custom_widgets import (
 from entities import Product
 
 
-# Диалоговое окно для создания и изменения товара
+# Окно добавления или изменения данных о товаре
 class ProductEditDialog(CustomDialog):
 
-    def __init__(self, product: Product = None, parent=None):
-        title = "Редактирование товара" if product else "Новый товар"
+    def __init__(self, product=None, parent=None):
+        if product:
+            title = "Редактирование товара"
+        else:
+            title = "Добавление товара"
         super().__init__(title, parent)
-        self.setMinimumWidth(440)
+        self.setMinimumWidth(420)
         self._target_product = product
 
         self._init_ui()
@@ -33,35 +36,35 @@ class ProductEditDialog(CustomDialog):
 
     def _init_ui(self):
         main_layout = QVBoxLayout()
-        main_layout.setContentsMargins(16, 16, 16, 16)
+        main_layout.setContentsMargins(14, 14, 14, 14)
         main_layout.setSpacing(10)
 
-        # Выравнивание полей формы
+        # Разметка полей формы
         form_layout = QFormLayout()
         form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         form_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         form_layout.setSpacing(8)
 
-        # Поля ввода
+        # Поля для ввода
         self.input_id = CustomSpinBox(1, 999999, 1)
         self.input_id.setDecimals(0)
         if self._target_product:
-            # При редактировании ID менять нельзя
+            # При редактировании не даем менять ID
             self.input_id.setEnabled(False)
 
-        self.input_name = CustomLineEdit("Введите наименование...")
+        self.input_name = CustomLineEdit("Наименование товара...")
 
         self.combo_category = CustomComboBox()
-        categories = list()
-        categories.append("Электроника")
-        categories.append("Периферия")
-        categories.append("Аудио")
-        categories.append("Хранение данных")
-        categories.append("Сетевое оборудование")
-        categories.append("Аксессуары")
-        categories.append("Питание")
-        for cat in categories:
-            self.combo_category.addItem(cat)
+        cats = list()
+        cats.append("Электроника")
+        cats.append("Периферия")
+        cats.append("Аудио")
+        cats.append("Хранение данных")
+        cats.append("Сетевое оборудование")
+        cats.append("Аксессуары")
+        cats.append("Питание")
+        for c in cats:
+            self.combo_category.addItem(c)
 
         self.input_price = CustomSpinBox(0.0, 1000000.0, 10.0)
         self.input_price.setDecimals(2)
@@ -77,10 +80,10 @@ class ProductEditDialog(CustomDialog):
         self.input_rating.setDecimals(1)
         self.input_rating.setValue(5.0)
 
-        self.input_description = CustomTextEdit("Описание товара...")
+        self.input_description = CustomTextEdit("Подробное описание товара...")
         self.input_description.setMaximumHeight(80)
 
-        # Добавляем поля в форму
+        # Добавляем все поля в форму
         form_layout.addRow(CustomLabel("ID:"), self.input_id)
         form_layout.addRow(CustomLabel("Название:"), self.input_name)
         form_layout.addRow(CustomLabel("Категория:"), self.combo_category)
@@ -92,24 +95,24 @@ class ProductEditDialog(CustomDialog):
 
         main_layout.addLayout(form_layout)
 
-        # Нижние кнопки
-        buttons_layout = QHBoxLayout()
-        buttons_layout.setSpacing(8)
-        buttons_layout.addStretch()
+        # Кнопки сохранения и отмены
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(8)
+        btn_layout.addStretch()
 
         self.btn_cancel = CustomButton("Отмена")
         self.btn_cancel.clicked.connect(self.reject)
-        buttons_layout.addWidget(self.btn_cancel)
+        btn_layout.addWidget(self.btn_cancel)
 
         self.btn_save = CustomButton("Сохранить", primary=True)
         self.btn_save.clicked.connect(self._on_save)
-        buttons_layout.addWidget(self.btn_save)
+        btn_layout.addWidget(self.btn_save)
 
-        main_layout.addLayout(buttons_layout)
+        main_layout.addLayout(btn_layout)
         self.setLayout(main_layout)
 
-    def _fill_data(self, product: Product):
-        # Заполняем форму значениями существующего товара
+    def _fill_data(self, product):
+        # Заполняем поля данными выбранного товара
         self.input_id.setValue(product.id)
         self.input_name.setText(product.name)
 
@@ -124,21 +127,21 @@ class ProductEditDialog(CustomDialog):
         self.input_description.setPlainText(product.description)
 
     def _on_save(self):
-        # Простая валидация перед сохранением
+        # Проверяем, что заполнено название
         name = self.input_name.text().strip()
         if not name:
-            QMessageBox.warning(self, "Предупреждение", "Заполните название товара!")
+            QMessageBox.warning(self, "Внимание", "Введите название товара!")
             return
 
         barcode = self.input_barcode.text().strip()
         if not barcode:
-            QMessageBox.warning(self, "Предупреждение", "Заполните штрихкод товара!")
+            QMessageBox.warning(self, "Внимание", "Введите штрихкод товара!")
             return
 
         self.accept()
 
-    def get_product(self) -> Product:
-        # Собираем введенные данные в объект Product
+    def get_product(self):
+        # Возвращаем созданный объект товара
         return Product(
             product_id=int(self.input_id.value()),
             name=self.input_name.text().strip(),

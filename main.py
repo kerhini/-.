@@ -5,7 +5,7 @@ from login_dialog import LoginDialog
 from main_window import InventoryAppWindow
 
 
-# Класс для запуска приложения
+# Класс для запуска программы
 class AppLauncher:
 
     @staticmethod
@@ -22,7 +22,7 @@ class AppLauncher:
             window.show()
             sys.exit(app.exec())
         else:
-            # Если пользователь отменил вход, просто закрываем
+            # Если пользователь отменил вход
             sys.exit(0)
 
 

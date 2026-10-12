@@ -15,6 +15,11 @@ env/
 .idea/
 *.swp
 
+# Build artifacts
+dist/
+build/
+*.spec
+
 # Session reports (generated at runtime)
 session_report.txt
 test_session_report.txt
