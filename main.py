@@ -1,5 +1,3 @@
-"""Модуль запуска приложения."""
-
 import sys
 from PyQt6.QtWidgets import QApplication
 
@@ -7,23 +5,24 @@ from login_dialog import LoginDialog
 from main_window import InventoryAppWindow
 
 
+# Класс для запуска приложения
 class AppLauncher:
-    """Запуск и управление жизненным циклом приложения."""
 
     @staticmethod
     def run():
         app = QApplication(sys.argv)
         app.setStyle("Fusion")
 
+        # Открываем окно входа для получения логина пользователя
         login_dialog = LoginDialog("admin")
         if login_dialog.exec():
             username = login_dialog.login_value
-            # 2. Инициализируем и отображаем главное окно приложения
+            # Создаем и показываем главное окно
             window = InventoryAppWindow(username)
             window.show()
             sys.exit(app.exec())
         else:
-            # Пользователь нажал отмену при входе
+            # Если пользователь отменил вход, просто закрываем
             sys.exit(0)
 
 

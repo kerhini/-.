@@ -1,9 +1,8 @@
-"""Кастомная структура данных: маппинг ключ-значение без использования dict."""
+# Кастомный контейнер для хранения данных (вместо обычного словаря)
 
 
 class MapEntry:
-    """Пара ключ-значение."""
-
+    # Элемент для хранения пары ключ-значение
     def __init__(self, key, value):
         self._key = key
         self._value = value
@@ -15,7 +14,7 @@ class MapEntry:
     @key.setter
     def key(self, new_key):
         if new_key is None:
-            raise ValueError("Ключ не может быть None")
+            raise ValueError("Ключ не может быть пустым")
         self._key = new_key
 
     @property
@@ -27,7 +26,7 @@ class MapEntry:
         self._value = new_value
 
     def __repr__(self) -> str:
-        return f"MapEntry(key={self._key!r}, value={self._value!r})"
+        return f"MapEntry({self._key!r}, {self._value!r})"
 
     def __str__(self) -> str:
         return f"{self._key}: {self._value}"
@@ -52,8 +51,7 @@ class MapEntry:
 
 
 class CustomMap:
-    """Ассоциативный контейнер на основе списка пар MapEntry."""
-
+    # Класс ассоциативного массива на основе обычного списка
     def __init__(self):
         self._entries = list()
 
@@ -64,32 +62,33 @@ class CustomMap:
     @entries.setter
     def entries(self, new_entries: list):
         if not isinstance(new_entries, list):
-            raise TypeError("Ожидается list")
+            raise TypeError("Ожидается список list")
         self._entries = new_entries
 
+    # Добавление или обновление значения
     def put(self, key, value):
-        """Добавить или обновить запись."""
         for entry in self._entries:
             if entry.key == key:
                 entry.value = value
                 return
         self._entries.append(MapEntry(key, value))
 
+    # Получение значения по ключу
     def get(self, key, default=None):
-        """Получить значение по ключу."""
         for entry in self._entries:
             if entry.key == key:
                 return entry.value
         return default
 
+    # Удаление элемента
     def remove(self, key) -> bool:
-        """Удалить запись по ключу."""
-        for index in range(len(self._entries)):
-            if self._entries[index].key == key:
-                self._entries.pop(index)
+        for i in range(len(self._entries)):
+            if self._entries[i].key == key:
+                self._entries.pop(i)
                 return True
         return False
 
+    # Проверка наличия ключа
     def contains_key(self, key) -> bool:
         for entry in self._entries:
             if entry.key == key:
@@ -108,6 +107,7 @@ class CustomMap:
     def clear(self):
         self._entries.clear()
 
+    # Магические методы для удобной работы как со словарем
     def __len__(self) -> int:
         return len(self._entries)
 
@@ -132,12 +132,12 @@ class CustomMap:
             yield entry.key
 
     def __repr__(self) -> str:
-        parts = [f"{e.key!r}: {e.value!r}" for e in self._entries]
-        return f"CustomMap([{', '.join(parts)}])"
+        items_str = ", ".join([f"{e.key!r}: {e.value!r}" for e in self._entries])
+        return f"CustomMap([{items_str}])"
 
     def __str__(self) -> str:
-        parts = [f"{e.key}: {e.value}" for e in self._entries]
-        return f"CustomMap({', '.join(parts)})"
+        items_str = ", ".join([f"{e.key}: {e.value}" for e in self._entries])
+        return f"CustomMap({items_str})"
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, CustomMap):

@@ -1,5 +1,3 @@
-"""Диалоговое окно входа пользователя."""
-
 from PyQt6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -15,12 +13,12 @@ from custom_widgets import (
 )
 
 
+# Окно авторизации пользователя перед началом работы
 class LoginDialog(CustomDialog):
-    """Окно авторизации пользователя."""
 
     def __init__(self, default_login: str = "admin", parent=None):
         super().__init__("Авторизация", parent)
-        self.setFixedSize(360, 180)
+        self.setFixedSize(340, 170)
         self._login_value = default_login
         self._init_ui(default_login)
 
@@ -30,40 +28,44 @@ class LoginDialog(CustomDialog):
 
     def _init_ui(self, default_login: str):
         layout = QVBoxLayout()
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(14)
+        layout.setContentsMargins(18, 18, 18, 18)
+        layout.setSpacing(12)
 
-        title_label = CustomLabel("Вход в систему складского учёта", is_title=True)
+        # Заголовок
+        title_label = CustomLabel("Вход в систему", is_title=True)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title_label)
 
+        # Форма ввода логина
         form_layout = QFormLayout()
         form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.login_input = CustomLineEdit("Введите ваш логин")
+        self.login_input = CustomLineEdit("Введите имя пользователя...")
         self.login_input.setText(default_login)
         form_layout.addRow(CustomLabel("Логин:"), self.login_input)
         layout.addLayout(form_layout)
 
-        button_layout = QHBoxLayout()
-        button_layout.setSpacing(10)
+        # Кнопки
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(8)
 
-        self.btn_exit = CustomButton("Выход", primary=False)
-        self.btn_exit.clicked.connect(self.reject)
-        button_layout.addWidget(self.btn_exit)
+        self.btn_cancel = CustomButton("Отмена")
+        self.btn_cancel.clicked.connect(self.reject)
+        btn_layout.addWidget(self.btn_cancel)
 
-        self.btn_submit = CustomButton("Войти", primary=True)
-        self.btn_submit.clicked.connect(self._on_submit)
-        button_layout.addWidget(self.btn_submit)
+        self.btn_login = CustomButton("Войти", primary=True)
+        self.btn_login.clicked.connect(self._on_login)
+        btn_layout.addWidget(self.btn_login)
 
-        layout.addLayout(button_layout)
+        layout.addLayout(btn_layout)
         self.setLayout(layout)
 
-        self.login_input.enter_pressed_signal.connect(self._on_submit)
+        # Вход по нажатию Enter
+        self.login_input.enter_pressed_signal.connect(self._on_login)
 
-    def _on_submit(self):
-        entered = self.login_input.text().strip()
-        if not entered:
-            QMessageBox.warning(self, "Ошибка", "Логин не может быть пустым!")
+    def _on_login(self):
+        login = self.login_input.text().strip()
+        if not login:
+            QMessageBox.warning(self, "Ошибка", "Введите логин!")
             return
-        self._login_value = entered
+        self._login_value = login
         self.accept()

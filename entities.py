@@ -1,10 +1,8 @@
-"""Классы предметной области: товар, репозиторий, базовая сущность."""
-
 from abc import ABC, abstractmethod
 
 
+# Базовый абстрактный класс для сущностей программы
 class BaseEntity(ABC):
-    """Абстрактный базовый класс для сущностей приложения."""
 
     @abstractmethod
     def get_id(self) -> int:
@@ -23,12 +21,13 @@ class BaseEntity(ABC):
         pass
 
 
+# Основной класс товара на складе
 class Product(BaseEntity):
-    """Товарная позиция складского каталога."""
 
     def __init__(self, product_id: int, name: str, category: str,
                  price: float, quantity: int, barcode: str,
                  rating: float, description: str):
+        # Инициализируем переменные через свойства для проверки данных
         self._id = 0
         self._name = ""
         self._category = ""
@@ -47,15 +46,17 @@ class Product(BaseEntity):
         self.rating = rating
         self.description = description
 
+    # Геттеры и сеттеры
     @property
     def id(self) -> int:
         return self._id
 
     @id.setter
     def id(self, value: int):
-        if not isinstance(value, int) or value < 0:
-            raise ValueError("ID должен быть неотрицательным целым числом")
-        self._id = value
+        val = int(value)
+        if val < 0:
+            raise ValueError("ID не может быть отрицательным")
+        self._id = val
 
     @property
     def name(self) -> str:
@@ -63,9 +64,10 @@ class Product(BaseEntity):
 
     @name.setter
     def name(self, value: str):
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError("Наименование не может быть пустым")
-        self._name = value.strip()
+        val = str(value).strip()
+        if not val:
+            raise ValueError("Название товара не может быть пустым")
+        self._name = val
 
     @property
     def category(self) -> str:
@@ -73,9 +75,10 @@ class Product(BaseEntity):
 
     @category.setter
     def category(self, value: str):
-        if not isinstance(value, str) or not value.strip():
+        val = str(value).strip()
+        if not val:
             raise ValueError("Категория не может быть пустой")
-        self._category = value.strip()
+        self._category = val
 
     @property
     def price(self) -> float:
@@ -83,10 +86,10 @@ class Product(BaseEntity):
 
     @price.setter
     def price(self, value: float):
-        num_val = float(value)
-        if num_val < 0.0:
+        val = float(value)
+        if val < 0.0:
             raise ValueError("Цена не может быть отрицательной")
-        self._price = round(num_val, 2)
+        self._price = round(val, 2)
 
     @property
     def quantity(self) -> int:
@@ -94,10 +97,10 @@ class Product(BaseEntity):
 
     @quantity.setter
     def quantity(self, value: int):
-        int_val = int(value)
-        if int_val < 0:
+        val = int(value)
+        if val < 0:
             raise ValueError("Количество не может быть отрицательным")
-        self._quantity = int_val
+        self._quantity = val
 
     @property
     def barcode(self) -> str:
@@ -105,9 +108,7 @@ class Product(BaseEntity):
 
     @barcode.setter
     def barcode(self, value: str):
-        if not isinstance(value, str):
-            raise TypeError("Штрихкод должен быть строкой")
-        self._barcode = value.strip()
+        self._barcode = str(value).strip()
 
     @property
     def rating(self) -> float:
@@ -115,10 +116,10 @@ class Product(BaseEntity):
 
     @rating.setter
     def rating(self, value: float):
-        num_val = float(value)
-        if num_val < 0.0 or num_val > 5.0:
-            raise ValueError("Рейтинг должен быть в диапазоне 0.0–5.0")
-        self._rating = round(num_val, 1)
+        val = float(value)
+        if val < 0.0 or val > 5.0:
+            raise ValueError("Рейтинг должен быть от 0 до 5")
+        self._rating = round(val, 1)
 
     @property
     def description(self) -> str:
@@ -126,10 +127,9 @@ class Product(BaseEntity):
 
     @description.setter
     def description(self, value: str):
-        if not isinstance(value, str):
-            raise TypeError("Описание должно быть строкой")
-        self._description = value.strip()
+        self._description = str(value).strip()
 
+    # Реализация методов базового абстрактного класса
     def get_id(self) -> int:
         return self._id
 
@@ -137,16 +137,16 @@ class Product(BaseEntity):
         return self._name
 
     def validate(self) -> bool:
-        return (
-            self._id >= 0
-            and len(self._name) > 0
-            and len(self._category) > 0
-            and self._price >= 0.0
-            and self._quantity >= 0
-            and (0.0 <= self._rating <= 5.0)
-        )
+        if self._id < 0 or not self._name or not self._category:
+            return False
+        if self._price < 0 or self._quantity < 0:
+            return False
+        if self._rating < 0 or self._rating > 5:
+            return False
+        return True
 
     def to_row(self) -> list:
+        # Формируем список ячеек для отображения в таблице
         return [
             str(self._id),
             self._name,
@@ -154,22 +154,17 @@ class Product(BaseEntity):
             f"{self._price:,.2f} руб.",
             str(self._quantity),
             self._barcode,
-            f"{self._rating:.1f} \u2605",
+            f"{self._rating:.1f}",
         ]
 
+    # Специальные методы
     def __repr__(self) -> str:
-        return (
-            f"Product(id={self._id}, name={self._name!r}, "
-            f"category={self._category!r}, price={self._price}, "
-            f"quantity={self._quantity})"
-        )
+        return f"Product(id={self._id}, name={self._name!r}, price={self._price})"
 
     def __str__(self) -> str:
-        return (
-            f"Товар №{self._id}: '{self._name}' ({self._category}) — "
-            f"{self._price:.2f} руб. [{self._quantity} шт.]"
-        )
+        return f"Товар #{self._id}: {self._name} - {self._price} руб."
 
+    # Методы сравнения
     def __eq__(self, other) -> bool:
         if not isinstance(other, Product):
             return False
@@ -206,6 +201,7 @@ class Product(BaseEntity):
         return hash((self._id, self._barcode))
 
     def __bool__(self) -> bool:
+        # Проверяем, есть ли товар в наличии
         return self._quantity > 0
 
     def __float__(self) -> float:
@@ -215,11 +211,12 @@ class Product(BaseEntity):
         return int(self._quantity)
 
     def __len__(self) -> int:
+        # Длина описания товара
         return len(self._description)
 
 
+# Класс для работы со списком товаров
 class ProductRepository:
-    """Репозиторий товаров: хранение, поиск, фильтрация, аналитика."""
 
     def __init__(self):
         self._items = list()
@@ -231,32 +228,35 @@ class ProductRepository:
     @items.setter
     def items(self, new_items: list):
         if not isinstance(new_items, list):
-            raise TypeError("Ожидается list")
+            raise TypeError("Ожидается список list")
         self._items = new_items
 
     def add(self, product: Product):
         if not isinstance(product, Product):
-            raise TypeError("Объект должен быть экземпляром Product")
+            raise TypeError("Ожидается объект класса Product")
         self._items.append(product)
 
     def remove_by_id(self, product_id: int) -> bool:
-        for idx in range(len(self._items)):
-            if self._items[idx].id == product_id:
-                self._items.pop(idx)
+        for i in range(len(self._items)):
+            if self._items[i].id == product_id:
+                self._items.pop(i)
                 return True
         return False
 
     def find_by_id(self, product_id: int):
-        for p in self._items:
-            if p.id == product_id:
-                return p
+        for product in self._items:
+            if product.id == product_id:
+                return product
         return None
 
     def get_all_as_tuple(self) -> tuple:
         return tuple(self._items)
 
     def get_unique_categories_as_set(self) -> set:
-        return set(p.category for p in self._items)
+        categories = set()
+        for p in self._items:
+            categories.add(p.category)
+        return categories
 
     def count(self) -> int:
         return len(self._items)
@@ -270,66 +270,75 @@ class ProductRepository:
 
     @staticmethod
     def calculate_total_quantity(products: list) -> int:
-        qty = 0
+        total = 0
         for p in products:
-            qty += p.quantity
-        return qty
+            total += p.quantity
+        return total
 
     @staticmethod
-    def filter_products(products: list, query: str,
-                        category: str, in_stock_only: bool) -> list:
-        filtered = list()
+    def filter_products(products: list, query: str, category: str, in_stock_only: bool) -> list:
+        result = list()
         q = query.strip().lower()
+
         for p in products:
-            if q and not (q in p.name.lower() or
-                          q in p.barcode.lower() or
-                          q in p.description.lower()):
-                continue
+            # Поиск по подстроке в названии, описании или штрихкоде
+            if q:
+                in_name = q in p.name.lower()
+                in_code = q in p.barcode.lower()
+                in_desc = q in p.description.lower()
+                if not (in_name or in_code or in_desc):
+                    continue
+
+            # Фильтр по категории
             if category and category != "Все категории" and p.category != category:
                 continue
+
+            # Фильтр только в наличии
             if in_stock_only and not bool(p):
                 continue
-            filtered.append(p)
-        return filtered
+
+            result.append(p)
+
+        return result
 
     @staticmethod
     def create_initial_dataset() -> list:
-        """Создать начальный набор товаров."""
+        # Начальный список товаров для заполнения склада
         return [
-            Product(101, "Ноутбук ThinkPad T14", "Электроника",
-                    89990.00, 15, "4601234567890", 4.8,
-                    "Корпоративный ноутбук на AMD Ryzen 7 PRO"),
-            Product(102, "Монитор UltraSharp 27 4K", "Электроника",
-                    45500.50, 8, "4601234567891", 4.9,
-                    "Профессиональный IPS монитор, 99% sRGB"),
-            Product(103, "Механическая клавиатура Keychron K2", "Периферия",
-                    8490.00, 24, "4601234567892", 4.7,
-                    "Беспроводная клавиатура с переключателями Gateron Brown"),
-            Product(104, "Беспроводная мышь MX Master 3S", "Периферия",
-                    9990.00, 30, "4601234567893", 4.9,
-                    "Эргономичная мышь с колесом прокрутки MagSpeed"),
-            Product(105, "Гарнитура HyperX Cloud II", "Аудио",
-                    7990.00, 12, "4601234567894", 4.6,
-                    "Игровая гарнитура с объёмным звуком 7.1"),
-            Product(106, "Студийный микрофон Shure MV7", "Аудио",
-                    26500.00, 5, "4601234567895", 4.9,
-                    "Гибридный USB/XLR микрофон для подкастов"),
-            Product(107, "Внешний SSD Samsung T7 1TB", "Хранение данных",
-                    11990.00, 18, "4601234567896", 4.8,
-                    "Портативный накопитель до 1050 МБ/с"),
-            Product(108, "Маршрутизатор Wi-Fi 6 AX3000", "Сетевое оборудование",
-                    6290.00, 14, "4601234567897", 4.5,
-                    "Двухдиапазонный гигабитный роутер 802.11ax"),
-            Product(109, "Сетевое хранилище NAS 2-Bay", "Сетевое оборудование",
-                    32000.00, 4, "4601234567898", 4.7,
-                    "Компактный сервер резервного копирования"),
-            Product(110, "Веб-камера 4K Pro Stream", "Периферия",
-                    14500.00, 0, "4601234567899", 4.4,
-                    "Камера с автофокусом и HDR для видеоконференций"),
-            Product(111, "Кабель USB-C Thunderbolt 4 1m", "Аксессуары",
-                    2490.00, 50, "4601234567810", 4.8,
-                    "Кабель 40 Гбит/с, зарядка 100W"),
-            Product(112, "Источник бесперебойного питания 1500VA", "Питание",
-                    18900.00, 6, "4601234567811", 4.6,
-                    "Линейно-интерактивный ИБП с LCD-дисплеем"),
+            Product(101, "Ноутбук Lenovo IdeaPad", "Электроника",
+                    48900.0, 12, "460010010001", 4.8,
+                    "Ноутбук для работы и учебы, экран 15.6 дюймов"),
+            Product(102, "Монитор Samsung 24", "Электроника",
+                    14500.0, 8, "460010010002", 4.7,
+                    "IPS монитор Full HD с тонкими рамками"),
+            Product(103, "Беспроводная мышь Logitech", "Периферия",
+                    1890.0, 30, "460010010003", 4.9,
+                    "Оптическая мышь с удобным хватом"),
+            Product(104, "Механическая клавиатура", "Периферия",
+                    4200.0, 16, "460010010004", 4.6,
+                    "Клавиатура с синей подсветкой и переключателями"),
+            Product(105, "Наушники с микрофоном Sony", "Аудио",
+                    3500.0, 10, "460010010005", 4.5,
+                    "Накладные наушники с чистым звуком"),
+            Product(106, "Настольный микрофон", "Аудио",
+                    2900.0, 6, "460010010006", 4.4,
+                    "USB микрофон с подставкой для записи и звонков"),
+            Product(107, "Внешний SSD 512 ГБ", "Хранение данных",
+                    5900.0, 15, "460010010007", 4.9,
+                    "Скоростной портативный накопитель USB 3.2"),
+            Product(108, "Wi-Fi роутер TP-Link", "Сетевое оборудование",
+                    3100.0, 14, "460010010008", 4.6,
+                    "Двухдиапазонный роутер для дома и офиса"),
+            Product(109, "Веб-камера Full HD", "Периферия",
+                    2400.0, 0, "460010010009", 4.2,
+                    "Камера 1080p со встроенным микрофоном"),
+            Product(110, "Сетевой фильтр 5 розеток", "Питание",
+                    850.0, 45, "460010010010", 4.7,
+                    "Удлинитель с защитой от перепадов напряжения 3м"),
+            Product(111, "Кабель HDMI 1.8м", "Аксессуары",
+                    390.0, 60, "460010010011", 4.8,
+                    "Экранированный кабель для передачи видео"),
+            Product(112, "Колонки 2.0 Sven", "Аудио",
+                    1650.0, 11, "460010010012", 4.3,
+                    "Компактная акустика с питанием от USB"),
         ]
