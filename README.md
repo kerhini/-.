@@ -1,5 +1,17 @@
 # Warehouse Management System
 
+Меню входа
+<img width="341" height="189" alt="image" src="https://github.com/user-attachments/assets/4f9e1536-9a88-4377-9d66-e3b7163eb34b" />
+
+Главное меню
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/6682e47f-6695-4e2d-b2fc-9ea807976b15" />
+
+Отчет о сессии
+<img width="361" height="236" alt="image" src="https://github.com/user-attachments/assets/df0be369-b2ee-40a8-b107-c074f9fbee49" />
+
+
+
+
 Десктопное приложение для складского учёта и управления каталогом товаров с графическим интерфейсом на PyQt6.
 
 ## Возможности
