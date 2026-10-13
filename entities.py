@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-
-# Базовый абстрактный класс для сущностей (требование по ООП)
 class BaseEntity(ABC):
 
     @abstractmethod
